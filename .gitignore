@@ -31,3 +31,12 @@ desktop.ini
 .vscode/
 *.swp
 *.swo
+
+# Локальные конфиги с паролями
+config.php
+.env
+
+# Логи и кеш
+*.log
+/tmp/
+.cache/
