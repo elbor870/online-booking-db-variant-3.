@@ -13,3 +13,68 @@
 - Централизованную обработку исключений и транзакций.
 
 ## 2. Диаграмма классов (UML)
+
+<<Abstract>> AbstractRepository
++findAll(where, params, orderBy, limit): array
++findById(id): ?array
++insert(data): int
++update(id, data): bool
++delete(id): bool
+      ^
+      |
+      | extends
+      |
++----------------------+     +----------------------+     +----------------------+
+| ClientRepository     |     | ServiceRepository    |     | AppointmentRepository|
++----------------------+     +----------------------+     +----------------------+
+
+    table = 'clients'         - table = 'services'         - table = 'appointments'
+    pk = 'client_id'          - pk = 'service_id'          - pk = 'appointment_id'
+    +findByPhone(phone): ?array +getByCategory(id): array    +getByDate(date): array
+    +findByEmail(email): ?array +getWithCategory(): array    +createAppointment(...): int
+                                                     +updateStatus(id, status): bool
+
+                                                     
+## 3. Описание методов репозиториев
+| Класс | Метод | Назначение |
+|-------|-------|------------|
+| `ClientRepository` | `findByPhone()`, `findByEmail()` | Быстрый поиск по уникальным полям |
+| `ServiceRepository` | `getByCategory()`, `getWithCategory()` | Получение услуг с JOIN категорий |
+| `AppointmentRepository` | `getByDate()`, `createAppointment()`, `updateStatus()` | Работа с расписанием, транзакционное создание записи с фиксацией запчастей, безопасное изменение статуса |
+
+## 4. Защита от SQL-инъекций
+1. **Только подготовленные выражения:** Все пользовательские данные передаются через `?` или именованные параметры в `PDO::prepare()` / `execute()`.
+2. **Запрет конкатенации:** Имена таблиц и столбцов жёстко заданы в свойствах классов. Динамическая сборка `WHERE` использует только ключи из `$where`, которые проверяются на соответствие структуре.
+3. **Белый список сортировки:** Параметр `$orderBy` валидируется через `in_array()` с массивом `$allowedSortColumns`. Неразрешённые столбцы игнорируются, предотвращая инъекции через `ORDER BY`.
+4. **Отключение эмуляции:** `PDO::ATTR_EMULATE_PREPARES => false` гарантирует, что PDO использует нативные подготовленные выражения MySQL.
+
+## 5. Работа с транзакциями
+В методе `AppointmentRepository::createAppointment()` используется транзакция:
+```php
+$this->pdo->beginTransaction();
+try {
+    // INSERT в appointments
+    // INSERT в appointment_parts (если status = 'завершено')
+    $this->pdo->commit();
+} catch (\PDOException $e) {
+    $this->pdo->rollBack();
+    throw new RepositoryException(...);
+}
+
+Это гарантирует атомарность: если триггер отклонит вставку из-за нехватки запчастей или произойдёт ошибка сети, данные не останутся в промежуточном состоянии.
+6. Выводы
+Реализованный DAL полностью изолирует прикладной код от SQL, обеспечивает защиту от инъекций, корректно обрабатывает ошибки через кастомные исключения и гарантирует целостность данных с помощью транзакций. Архитектура легко масштабируется добавлением новых репозиториев без изменения базового класса.
+
+---
+
+## 📦 Инструкция по деплою в репозиторий
+
+1. Создайте папку `src/` и `docs/` в корне вашего репозитория.
+2. Скопируйте файлы в соответствии со структурой.
+3. В корне создайте `config.php` из `config.example.php` и укажите свои данные.
+4. Обновите `.gitignore`, добавив `config.php`.
+5. Выполните коммит:
+   ```bash
+   git add .
+   git commit -m "feat: implement data access layer for online booking system"
+   git push origin main
