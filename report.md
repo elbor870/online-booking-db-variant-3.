@@ -60,9 +60,7 @@
 
 ### 2.3 ER-диаграмма
 
-<img src="./diagrams/er-diagram.png" alt="Скриншот" width="600" height="400">
-
-![ER-диаграмма](./diagrams/er-diagram.png)
+![ER-диаграмма](./er-diagram.png)
 *Рисунок 1. ER-диаграмма базы данных «Система записи в автосервис»*
 
 ---
