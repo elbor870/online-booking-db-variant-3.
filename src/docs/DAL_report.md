@@ -14,25 +14,33 @@
 
 ## 2. Диаграмма классов (UML)
 
+```text
 <<Abstract>> AbstractRepository
-+findAll(where, params, orderBy, limit): array
-+findById(id): ?array
-+insert(data): int
-+update(id, data): bool
-+delete(id): bool
-      ^
-      |
-      | extends
-      |
-+----------------------+     +----------------------+     +----------------------+
-| ClientRepository     |     | ServiceRepository    |     | AppointmentRepository|
-+----------------------+     +----------------------+     +----------------------+
-
-    table = 'clients'         - table = 'services'         - table = 'appointments'
-    pk = 'client_id'          - pk = 'service_id'          - pk = 'appointment_id'
-    +findByPhone(phone): ?array +getByCategory(id): array    +getByDate(date): array
-    +findByEmail(email): ?array +getWithCategory(): array    +createAppointment(...): int
-                                                     +updateStatus(id, status): bool
+┌─────────────────────────────────────────┐
+│ - $pdo: PDO                             │
+│ - $table: string                        │
+│ - $primaryKey: string                   │
+│ - $allowedSortColumns: array            │
+├─────────────────────────────────────────┤
+│ + findAll(...): array                   │
+│ + findById(id): ?array                  │
+│ + insert(data): int                     │
+│ + update(id, data): bool                │
+│ + delete(id): bool                      │
+└─────────────────┬───────────────────────┘
+                  │ extends
+          ┌───────┴───────┐
+          ▼               ▼               ▼
+┌─────────────────┐ ┌─────────────────┐ ┌─────────────────────┐
+│ ClientRepository│ │ServiceRepository│ │ AppointmentRepository│
+├─────────────────┤ ├─────────────────┤ ├─────────────────────┤
+│ -table='clients'│ │-table='services'│ │-table='appointments'│
+│ -pk='client_id' │ │-pk='service_id' │ │-pk='appointment_id' │
+├─────────────────┤ ├─────────────────┤ ├─────────────────────┤
+│+findByPhone()   │ │+getByCategory() │ │+getByDate()         │
+│+findByEmail()   │ │+getWithCategory()│ │+createAppointment() │
+│                 │ │                 │ │+updateStatus()      │
+└─────────────────┘ └─────────────────┘ └─────────────────────┘
 
                                                      
 ## 3. Описание методов репозиториев
