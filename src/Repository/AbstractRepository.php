@@ -13,39 +13,32 @@ abstract class AbstractRepository
         $this->pdo = $pdo;
     }
 
-    /**
-     * Выборка с фильтрацией, сортировкой и лимитом
-     */
-    public function findAll(array $where = [], array $params = [], array $orderBy = [], int $limit = 0): array
+    public function findAll(array $where = [], array $params = [], array $orderBy = [], int $limit = 0, int $offset = 0): array
     {
         $sql = "SELECT * FROM {$this->table}";
-        $conditions = [];
         $bindings = $params;
 
-        foreach ($where as $col => $val) {
-            $conditions[] = "$col = ?";
-            $bindings[] = $val;
-        }
-        if ($conditions) {
+        if (!empty($where)) {
+            $conditions = [];
+            foreach ($where as $col => $val) {
+                $conditions[] = "$col LIKE ?";
+                $bindings[] = "%$val%";
+            }
             $sql .= " WHERE " . implode(" AND ", $conditions);
         }
 
-        // Безопасная сортировка через белый список
         if (!empty($orderBy)) {
-            $validClauses = [];
+            $valid = [];
             foreach ($orderBy as $col => $dir) {
                 if (in_array($col, $this->allowedSortColumns, true)) {
-                    $direction = strtoupper($dir) === 'DESC' ? 'DESC' : 'ASC';
-                    $validClauses[] = "$col $direction";
+                    $valid[] = "$col " . (strtoupper($dir) === 'DESC' ? 'DESC' : 'ASC');
                 }
             }
-            if ($validClauses) {
-                $sql .= " ORDER BY " . implode(", ", $validClauses);
-            }
+            if ($valid) $sql .= " ORDER BY " . implode(", ", $valid);
         }
 
         if ($limit > 0) {
-            $sql .= " LIMIT " . (int)$limit;
+            $sql .= " LIMIT " . (int)$limit . " OFFSET " . (int)$offset;
         }
 
         $stmt = $this->pdo->prepare($sql);
@@ -65,7 +58,7 @@ abstract class AbstractRepository
         $columns = implode(', ', array_keys($data));
         $placeholders = implode(', ', array_fill(0, count($data), '?'));
         $sql = "INSERT INTO {$this->table} ($columns) VALUES ($placeholders)";
-        
+
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(array_values($data));
         return (int)$this->pdo->lastInsertId();
@@ -78,7 +71,7 @@ abstract class AbstractRepository
             $set[] = "$col = ?";
         }
         $sql = "UPDATE {$this->table} SET " . implode(', ', $set) . " WHERE {$this->primaryKey} = ?";
-        
+
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([...array_values($data), $id]);
         return $stmt->rowCount() > 0;
@@ -89,5 +82,14 @@ abstract class AbstractRepository
         $stmt = $this->pdo->prepare("DELETE FROM {$this->table} WHERE {$this->primaryKey} = ?");
         $stmt->execute([$id]);
         return $stmt->rowCount() > 0;
+    }
+
+    /**
+     * Публичный геттер для разрешённых столбцов сортировки
+     * ✅ Этот метод должен находиться ВНУТРИ класса, перед последней закрывающей }
+     */
+    public function getAllowedSortColumns(): array
+    {
+        return $this->allowedSortColumns;
     }
 }

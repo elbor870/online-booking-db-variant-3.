@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: localhost
--- Время создания: Май 19 2026 г., 05:18
+-- Время создания: Май 22 2026 г., 13:43
 -- Версия сервера: 5.7.21-20-beget-5.7.21-20-1-log
 -- Версия PHP: 5.6.40
 
@@ -27,8 +27,8 @@ SET time_zone = "+00:00";
 --
 -- Структура таблицы `appointments`
 --
--- Создание: Май 19 2026 г., 01:45
--- Последнее обновление: Май 19 2026 г., 01:53
+-- Создание: Май 21 2026 г., 21:17
+-- Последнее обновление: Май 22 2026 г., 10:36
 --
 
 DROP TABLE IF EXISTS `appointments`;
@@ -37,6 +37,7 @@ CREATE TABLE `appointments` (
   `client_id` int(11) NOT NULL,
   `car_id` int(11) NOT NULL,
   `service_id` int(11) NOT NULL,
+  `specialist_id` int(11) DEFAULT NULL,
   `appointment_datetime` datetime NOT NULL,
   `status` enum('запланировано','в работе','завершено','отменено') DEFAULT 'запланировано',
   `total_cost` decimal(10,2) DEFAULT NULL,
@@ -47,11 +48,32 @@ CREATE TABLE `appointments` (
 -- Дамп данных таблицы `appointments`
 --
 
-INSERT INTO `appointments` (`appointment_id`, `client_id`, `car_id`, `service_id`, `appointment_datetime`, `status`, `total_cost`, `created_at`) VALUES
-(1, 1, 1, 5, '2026-05-25 10:00:00', 'завершено', NULL, '2026-05-19 01:53:11'),
-(2, 2, 3, 3, '2026-05-25 11:30:00', 'завершено', NULL, '2026-05-19 01:53:11'),
-(3, 1, 2, 1, '2026-05-26 09:00:00', 'запланировано', NULL, '2026-05-19 01:53:11'),
-(4, 3, 4, 6, '2026-05-27 14:00:00', 'завершено', NULL, '2026-05-19 01:53:11');
+INSERT INTO `appointments` (`appointment_id`, `client_id`, `car_id`, `service_id`, `specialist_id`, `appointment_datetime`, `status`, `total_cost`, `created_at`) VALUES
+(1, 1, 1, 5, NULL, '2026-05-25 10:00:00', 'завершено', NULL, '2026-05-19 01:53:11'),
+(2, 2, 3, 3, NULL, '2026-05-25 11:30:00', 'завершено', NULL, '2026-05-19 01:53:11'),
+(3, 1, 2, 1, NULL, '2026-05-26 09:00:00', 'завершено', NULL, '2026-05-19 01:53:11'),
+(4, 3, 4, 6, NULL, '2026-05-27 14:00:00', 'завершено', NULL, '2026-05-19 01:53:11'),
+(9, 2, 3, 2, NULL, '2027-10-31 13:00:00', 'завершено', NULL, '2026-05-21 20:45:42'),
+(10, 1, 1, 3, 2, '2026-09-01 11:30:00', 'отменено', NULL, '2026-05-21 21:25:06'),
+(11, 2, 3, 6, 1, '2026-05-23 10:00:00', 'отменено', NULL, '2026-05-22 10:36:03');
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `appointment_log`
+--
+-- Создание: Май 21 2026 г., 21:00
+--
+
+DROP TABLE IF EXISTS `appointment_log`;
+CREATE TABLE `appointment_log` (
+  `log_id` int(11) NOT NULL,
+  `appointment_id` int(11) NOT NULL,
+  `old_status` varchar(20) DEFAULT NULL,
+  `new_status` varchar(20) DEFAULT NULL,
+  `changed_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `reason` text
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -86,7 +108,7 @@ INSERT INTO `appointment_parts` (`appointment_id`, `part_id`, `quantity_used`) V
 -- Структура таблицы `cars`
 --
 -- Создание: Май 19 2026 г., 01:45
--- Последнее обновление: Май 19 2026 г., 01:53
+-- Последнее обновление: Май 21 2026 г., 20:33
 --
 
 DROP TABLE IF EXISTS `cars`;
@@ -107,7 +129,8 @@ INSERT INTO `cars` (`car_id`, `client_id`, `make`, `model`, `year`, `vin`) VALUE
 (1, 1, 'Toyota', 'Camry', 2020, 'JTDBR32E050123456'),
 (2, 1, 'VAZ', 'Granta', 2018, 'XTA219000J0123456'),
 (3, 2, 'Hyundai', 'Solaris', 2021, 'Z94CT41DBMR012345'),
-(4, 3, 'Ford', 'Focus', 2019, '1FADP3K29JL123456');
+(4, 3, 'Ford', 'Focus', 2019, '1FADP3K29JL123456'),
+(6, 1, 'Lada', 'Kalina', 2012, 'hawdgajwhdwwwwwww');
 
 -- --------------------------------------------------------
 
@@ -115,7 +138,7 @@ INSERT INTO `cars` (`car_id`, `client_id`, `make`, `model`, `year`, `vin`) VALUE
 -- Структура таблицы `clients`
 --
 -- Создание: Май 19 2026 г., 01:45
--- Последнее обновление: Май 19 2026 г., 01:53
+-- Последнее обновление: Май 22 2026 г., 10:30
 --
 
 DROP TABLE IF EXISTS `clients`;
@@ -135,7 +158,7 @@ CREATE TABLE `clients` (
 --
 
 INSERT INTO `clients` (`client_id`, `last_name`, `first_name`, `patronymic`, `phone`, `email`, `birth_date`, `created_at`) VALUES
-(1, 'Иванов', 'Александр', 'Петрович', '+79161234567', 'ivanov@example.com', '1985-03-15', '2026-05-19 01:53:11'),
+(1, 'Иванов', 'Александррр', 'Петрович', '+79161234567', 'ivanov@example.com', '2007-10-31', '2026-05-19 01:53:11'),
 (2, 'Смирнова', 'Елена', 'Дмитриевна', '+79262345678', 'smirnova@example.com', '1990-07-22', '2026-05-19 01:53:11'),
 (3, 'Козлов', 'Михаил', 'Андреевич', '+79033456789', 'kozlov@example.com', '1978-11-05', '2026-05-19 01:53:11');
 
@@ -176,7 +199,7 @@ INSERT INTO `parts` (`part_id`, `part_name`, `part_number`, `stock_quantity`, `p
 -- Структура таблицы `services`
 --
 -- Создание: Май 19 2026 г., 01:45
--- Последнее обновление: Май 19 2026 г., 01:53
+-- Последнее обновление: Май 22 2026 г., 10:31
 --
 
 DROP TABLE IF EXISTS `services`;
@@ -195,7 +218,7 @@ CREATE TABLE `services` (
 INSERT INTO `services` (`service_id`, `service_name`, `category_id`, `price`, `duration_minutes`) VALUES
 (1, 'Компьютерная диагностика', 1, '2500.00', 45),
 (2, 'Диагностика ходовой части', 1, '1500.00', 30),
-(3, 'Балансировка колёс', 2, '800.00', 20),
+(3, 'Балансировка колёс', 2, '800.10', 20),
 (4, 'Замена шин', 2, '2000.00', 40),
 (5, 'Замена масла', 3, '1200.00', 30),
 (6, 'Замена тормозных колодок', 3, '3500.00', 60);
@@ -252,6 +275,32 @@ INSERT INTO `service_parts` (`service_id`, `part_id`, `required_quantity`) VALUE
 (6, 3, 1),
 (6, 4, 1);
 
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `specialists`
+--
+-- Создание: Май 21 2026 г., 21:17
+-- Последнее обновление: Май 21 2026 г., 21:17
+--
+
+DROP TABLE IF EXISTS `specialists`;
+CREATE TABLE `specialists` (
+  `specialist_id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `specialty` varchar(50) NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Дамп данных таблицы `specialists`
+--
+
+INSERT INTO `specialists` (`specialist_id`, `name`, `specialty`, `created_at`) VALUES
+(1, 'Иванов А.П.', 'Моторист', '2026-05-22 00:17:03'),
+(2, 'Петров С.В.', 'Ходовик', '2026-05-22 00:17:03'),
+(3, 'Сидоров Д.М.', 'Диагност', '2026-05-22 00:17:03');
+
 --
 -- Индексы сохранённых таблиц
 --
@@ -263,7 +312,14 @@ ALTER TABLE `appointments`
   ADD PRIMARY KEY (`appointment_id`),
   ADD UNIQUE KEY `unique_car_slot` (`car_id`,`appointment_datetime`),
   ADD KEY `client_id` (`client_id`),
-  ADD KEY `service_id` (`service_id`);
+  ADD KEY `service_id` (`service_id`),
+  ADD KEY `fk_app_specialist` (`specialist_id`);
+
+--
+-- Индексы таблицы `appointment_log`
+--
+ALTER TABLE `appointment_log`
+  ADD PRIMARY KEY (`log_id`);
 
 --
 -- Индексы таблицы `appointment_parts`
@@ -319,6 +375,12 @@ ALTER TABLE `service_parts`
   ADD KEY `part_id` (`part_id`);
 
 --
+-- Индексы таблицы `specialists`
+--
+ALTER TABLE `specialists`
+  ADD PRIMARY KEY (`specialist_id`);
+
+--
 -- AUTO_INCREMENT для сохранённых таблиц
 --
 
@@ -326,19 +388,25 @@ ALTER TABLE `service_parts`
 -- AUTO_INCREMENT для таблицы `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `appointment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `appointment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT для таблицы `appointment_log`
+--
+ALTER TABLE `appointment_log`
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT для таблицы `cars`
 --
 ALTER TABLE `cars`
-  MODIFY `car_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `car_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT для таблицы `clients`
 --
 ALTER TABLE `clients`
-  MODIFY `client_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `client_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT для таблицы `parts`
@@ -350,13 +418,19 @@ ALTER TABLE `parts`
 -- AUTO_INCREMENT для таблицы `services`
 --
 ALTER TABLE `services`
-  MODIFY `service_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `service_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT для таблицы `service_categories`
 --
 ALTER TABLE `service_categories`
   MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT для таблицы `specialists`
+--
+ALTER TABLE `specialists`
+  MODIFY `specialist_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц
@@ -368,7 +442,8 @@ ALTER TABLE `service_categories`
 ALTER TABLE `appointments`
   ADD CONSTRAINT `appointments_ibfk_1` FOREIGN KEY (`client_id`) REFERENCES `clients` (`client_id`) ON UPDATE CASCADE,
   ADD CONSTRAINT `appointments_ibfk_2` FOREIGN KEY (`car_id`) REFERENCES `cars` (`car_id`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `appointments_ibfk_3` FOREIGN KEY (`service_id`) REFERENCES `services` (`service_id`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `appointments_ibfk_3` FOREIGN KEY (`service_id`) REFERENCES `services` (`service_id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_app_specialist` FOREIGN KEY (`specialist_id`) REFERENCES `specialists` (`specialist_id`) ON DELETE SET NULL;
 
 --
 -- Ограничения внешнего ключа таблицы `appointment_parts`
