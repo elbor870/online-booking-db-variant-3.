@@ -1,5 +1,4 @@
 <?php
-// поддержка обоих способов передачи данных
 $client = $client ?? ($data['client'] ?? $data);
 $cars = $cars ?? ($data['cars'] ?? []);
 $appointments = $appointments ?? ($data['appointments'] ?? []);
