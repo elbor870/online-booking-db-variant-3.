@@ -11,7 +11,6 @@
     <h1 class="mb-4">Справочник клиентов</h1>
     <a href="index.php?entity=client&action=create" class="btn btn-primary mb-3">+ Добавить клиента</a>
     <?= flash() ?>
-
     <form class="row g-2 mb-3" method="GET">
         <input type="hidden" name="entity" value="client">
         <input type="hidden" name="action" value="list">
@@ -22,7 +21,6 @@
             <button type="submit" class="btn btn-outline-secondary w-100">Найти</button>
         </div>
     </form>
-
     <div class="table-responsive bg-white p-3 rounded shadow-sm">
         <table class="table table-hover align-middle">
             <thead class="table-dark">
@@ -44,6 +42,7 @@
                     <td><?= escape($row['email']) ?></td>
                     <td><?= escape($row['birth_date']) ?></td>
                     <td class="text-end">
+                        <a href="index.php?entity=client&action=view&id=<?= $row['client_id'] ?>" class="btn btn-sm btn-outline-info">👁️</a>
                         <a href="index.php?entity=client&action=edit&id=<?= $row['client_id'] ?>" class="btn btn-sm btn-outline-primary">✏️</a>
                         <a href="index.php?entity=client&action=delete&id=<?= $row['client_id'] ?>" class="btn btn-sm btn-outline-danger">🗑️</a>
                     </td>
@@ -52,8 +51,6 @@
             </tbody>
         </table>
     </div>
-
-    <!-- Пагинация -->
     <?php if ($totalPages > 1): ?>
     <nav class="mt-3"><ul class="pagination justify-content-center">
         <?php for ($i = 1; $i <= $totalPages; $i++): ?>
