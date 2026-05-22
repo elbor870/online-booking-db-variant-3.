@@ -1,17 +1,14 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Карточка клиента | Автосервис</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
+<?php
+// поддержка обоих способов передачи данных
+$client = $client ?? ($data['client'] ?? $data);
+$cars = $cars ?? ($data['cars'] ?? []);
+$appointments = $appointments ?? ($data['appointments'] ?? []);
+?>
 <div class="container py-4">
     <h1 class="mb-4">Карточка клиента</h1>
 
     <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-dark text-white">Информация о клиенте</div>
+        <div class="card-header bg-primary text-white">Информация о клиенте</div>
         <div class="card-body">
             <h5><?= escape($client['last_name'] . ' ' . $client['first_name'] . ' ' . ($client['patronymic'] ?? '')) ?></h5>
             <p class="mb-1"><strong>Телефон:</strong> <?= escape($client['phone']) ?></p>
@@ -78,6 +75,3 @@
 
     <a href="index.php?entity=client&action=list" class="btn btn-secondary mt-3">Назад к списку</a>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
