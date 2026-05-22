@@ -25,3 +25,34 @@
 ```bash
 git clone https://github.com/ВАШ_АККАУНТ/online-booking-db-variant-3.git
 cd online-booking-db-variant-3
+
+---
+
+# Совместная работа
+
+
+Напарник: wwwrwrwr — https://github.com/wwwrwrwr
+
+
+PR который я отправил в репозиторий напарника:
+https://github.com/wwwrwrwr/online-booking-db-variant-1/pull/1
+
+
+PR который напарник отправил в мой репозиторий:
+https://github.com/elbor870/online-booking-db-variant-3/pull/1
+
+
+Что я добавил напарнику (стоматология):
+
+
+- Страница просмотра карточки клиента views/client/view.php с информацией о клиенте и его записями на приём
+- Метод viewAction() в ClientController.php с JOIN-запросом к врачам и услугам
+- Кнопка «Просмотр» в views/client/list.php
+
+
+Что напарник добавил мне (автосервис):
+
+
+- Страница просмотра карточки клиента views/client/view.php с информацией о клиенте, его автомобилях и историей записей
+- Обработка action=view в index.php с JOIN-запросами к таблицам cars и appointments
+- Кнопка «Просмотр» в views/client/list.php
